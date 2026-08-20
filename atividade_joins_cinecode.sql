@@ -348,7 +348,8 @@ RIGHT JOIN filmes AS f ON f.id_filme = ats.id_filme;
 -- neste caso.
 SELECT c.nome_cliente AS 'Nome do Cliente', COUNT(al.id_aluguel) AS 'Quantidade de Aluguéis' FROM alugueis AS al
 LEFT JOIN clientes AS c ON c.id_cliente = al.id_cliente
-GROUP BY c.id_cliente;
+GROUP BY c.id_cliente
+ORDER BY COUNT(al.id_aluguel) DESC;
 
 
 
@@ -414,8 +415,10 @@ GROUP BY f.titulo;
 --   LEFT JOIN
 --   COUNT()
 --   GROUP BY
-
-
+SELECT f.titulo AS 'Título', COUNT(at.id_ator) AS 'Quantidade de Atores' FROM filmes AS f
+LEFT JOIN atuacoes AS ats ON ats.id_filme = f.id_filme
+LEFT JOIN atores AS at ON at.id_ator = ats.id_ator
+GROUP BY f.id_filme;
 
 
 
@@ -437,7 +440,10 @@ GROUP BY f.titulo;
 --   GROUP BY
 --
 -- Ordene da região com mais alugueis para a com menos.
-
+SELECT c.regiao AS 'Região', COUNT(al.id_aluguel) AS 'Quantidade de Aluguéis' FROM alugueis AS al
+JOIN clientes AS c ON c.id_cliente = al.id_cliente
+GROUP BY c.regiao
+ORDER BY COUNT(al.id_aluguel) DESC;
 
 
 
@@ -463,7 +469,10 @@ GROUP BY f.titulo;
 --
 -- DICA:
 -- Cada linha de alugueis representa uma locação do filme.
-
+SELECT f.titulo AS 'Título', COUNT(al.id_aluguel) AS 'Quantidade de Aluguéis', ROUND(SUM(f.preco_aluguel),2) AS 'Receita Gerada' 
+FROM alugueis AS al
+JOIN filmes AS f ON f.id_filme = al.id_filme
+GROUP BY f.id_filme;
 
 
 
@@ -487,7 +496,11 @@ GROUP BY f.titulo;
 --   COUNT()
 --   GROUP BY
 --   HAVING
-
+SELECT c.nome_cliente AS 'Nome do Cliente', COUNT(al.id_aluguel) AS 'Quandidade de Aluguéis' 
+FROM alugueis AS al
+JOIN clientes AS c ON c.id_cliente = al.id_cliente
+GROUP BY c.id_cliente
+HAVING COUNT(al.id_aluguel) >= 5;
 
 
 
@@ -502,9 +515,12 @@ GROUP BY f.titulo;
 --   - quantidade de alugueis.
 --
 -- Ordene do mais alugado para o menos alugado.
-
-
-
+SELECT f.titulo, COUNT(al.id_aluguel) 
+FROM filmes AS f
+JOIN alugueis AS al ON al.id_filme = f.id_filme
+GROUP BY f.id_filme
+HAVING COUNT(al.id_aluguel) >= 8
+ORDER BY COUNT(al.id_aluguel) DESC;
 
 
 -- ------------------------------------------------------------
@@ -525,7 +541,11 @@ GROUP BY f.titulo;
 --   AVG()
 --   WHERE
 --   GROUP BY
-
+SELECT f.genero AS 'Gênero', COUNT(al.nota) AS 'Quantidade de Notas', ROUND(AVG(al.nota),2) AS 'Nota Média'
+FROM alugueis al 
+JOIN filmes f ON f.id_filme = al.id_filme
+WHERE al.nota IS NOT NULL
+GROUP BY f.genero;
 
 
 
@@ -542,7 +562,12 @@ GROUP BY f.titulo;
 --   - média das notas.
 --
 -- Utilize HAVING.
-
+SELECT f.genero AS 'Gênero', COUNT(al.nota) AS 'Quantidade de Notas', ROUND(AVG(al.nota),2) AS 'Nota Média'
+FROM alugueis al 
+JOIN filmes f ON f.id_filme = al.id_filme
+WHERE al.nota IS NOT NULL
+GROUP BY f.genero
+HAVING ROUND(AVG(al.nota),2) >= 7;
 
 
 
@@ -571,7 +596,11 @@ GROUP BY f.titulo;
 -- DICA:
 -- Para filmes nunca alugados, utilize COALESCE() se quiser
 -- apresentar o faturamento como 0 em vez de NULL.
-
+SELECT f.titulo AS 'Título', f.genero AS 'Gênero', COUNT(al.id_aluguel) AS 'Quantidade de Aluguéis', ROUND(AVG(al.nota),2) AS 'Nota Média', ROUND(SUM(f.preco_aluguel),2) AS 'Receita Total'
+FROM filmes f 
+LEFT JOIN alugueis al ON al.id_filme = f.id_filme
+GROUP BY f.id_filme
+ORDER BY ROUND(SUM(f.preco_aluguel),2) DESC, COUNT(al.id_aluguel) DESC;
 
 
 
